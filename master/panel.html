@@ -3,184 +3,99 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Mantenimiento Edge Piedrasanta</title>
+<title>Mantenimiento Edge · Piedrasanta</title>
 <style>
-body{font-family:Arial,sans-serif;max-width:1100px;margin:25px auto;padding:0 16px;background:#f4f6f8;color:#17233c}
-h1{color:#17365d}
-.box{background:white;padding:20px;border-radius:12px;margin:16px 0;box-shadow:0 2px 8px #ddd}
-input,button{padding:10px;margin:5px;font-size:16px}
-input{width:120px}
-button{background:#17365d;color:white;border:0;border-radius:6px;cursor:pointer}
-.estado{display:inline-block;padding:12px 20px;border-radius:8px;font-size:24px;font-weight:bold;background:#e5e7eb}
-.normal{background:#dcfce7;color:#166534}
-.advertencia{background:#fef3c7;color:#92400e}
-.critico,.error{background:#fee2e2;color:#991b1b}
-table{width:100%;border-collapse:collapse;font-size:14px}
-th,td{padding:10px;text-align:left;border-bottom:1px solid #ddd}
-th{background:#e8eef5}
-.scroll{overflow:auto}
-pre{white-space:pre-wrap;overflow-wrap:anywhere}
-.small{color:#536176;font-size:14px}
+:root{--ink:#172a40;--muted:#526477;--border:#dae3eb;--blue:#2158a5;--teal:#087f82;--bg:#f2f5f8}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,Segoe UI,Arial,sans-serif}
+header{background:#142c46;color:white;padding:30px max(20px,calc((100% - 1180px)/2)) 26px}header p{margin:5px 0;color:#c8d9e9}.eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:700}h1{font-size:clamp(25px,4vw,34px);line-height:1.2;margin:9px 0}h2{font-size:19px;margin:0 0 10px}h3{font-size:15px;margin:0 0 5px}p{margin:8px 0}main{max-width:1220px;margin:0 auto;padding:20px}
+.box{background:white;border:1px solid var(--border);border-radius:14px;padding:22px;margin-bottom:18px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.grid>.box{min-width:0}.small{font-size:13px;color:var(--muted)}.tag{display:inline-block;border:1px solid #bfd0df;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}.heading{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px}.heading h2{margin:0}
+.estado{display:inline-block;border-radius:9px;padding:8px 16px;font-size:23px;font-weight:750;background:#edf1f5}.normal{background:#e4f5eb;color:#17633b}.advertencia{background:#fff1d2;color:#805006}.critico,.error{background:#fde9e8;color:#9b2925}.neutral{background:#edf1f5;color:#526477}.statusline{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:16px}.statusline p{margin:0}.warning{color:#9b2925;font-weight:600}.workers{display:grid;gap:10px}.worker{border:1px solid var(--border);border-radius:9px;padding:12px;display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}.pill{padding:3px 8px;border-radius:5px;font-size:12px}.worker small{display:block;color:var(--muted)}
+form{display:flex;gap:12px;align-items:end;flex-wrap:wrap;margin:12px 0}label{font-size:13px;font-weight:600}input{display:block;width:150px;padding:10px;margin-top:5px;border:1px solid #aebdcd;border-radius:7px;font:inherit;color:var(--ink)}button{border:0;border-radius:7px;padding:11px 17px;background:var(--blue);color:white;font:600 14px system-ui;cursor:pointer}button:hover{filter:brightness(.93)}button:disabled{opacity:.55;cursor:wait}.presets{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.presets button{background:#eaf0f7;color:#254666;padding:8px 12px}:focus-visible{outline:3px solid #b3670a;outline-offset:3px}details{margin-top:12px}summary{cursor:pointer;color:var(--blue);font-size:13px}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f4f7fa;border-radius:7px;padding:12px;font-size:12px}
+.chart{width:100%;height:auto;display:block}.chart text{font:12px system-ui;fill:#526477}.chart .axislabel{font-size:11px}.chartbox{min-height:180px}.legend{display:flex;gap:15px;flex-wrap:wrap;font-size:12px;color:var(--muted)}.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}.chartnote{min-height:20px;margin-top:5px}.barrow{margin:13px 0}.barlabel{display:flex;justify-content:space-between;gap:12px;font-size:13px;margin-bottom:5px}.track{height:12px;background:#edf1f5;border-radius:4px;overflow:hidden}.fill{height:100%;background:var(--blue);border-radius:4px;min-width:0}.metricgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin:18px 0}.metric{min-width:0}.metric+.metric{border-left:1px solid var(--border);padding-left:22px}.note{border-left:3px solid #a9c2d8;background:#f3f7fb;padding:10px 13px;font-size:13px;color:#40566c}.count{font-size:32px;font-weight:750;line-height:1.1}.scroll{overflow:auto}table{border-collapse:collapse;width:100%;font-size:13px}th,td{padding:11px 10px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap}th{background:#eef3f8;color:#42586f;font-size:12px}caption{text-align:left;font-size:13px;color:var(--muted);padding:0 0 12px}.statecell{font-weight:600}footer{text-align:center;color:var(--muted);font-size:12px;padding:4px 0 24px}.empty{color:var(--muted);padding:45px 15px;text-align:center;background:#f8fafc;border-radius:8px}.metric .barlabel{font-size:12px}
+@media(max-width:760px){.grid,.metricgrid{grid-template-columns:1fr}.grid{gap:0}.metric+.metric{border-left:0;border-top:1px solid var(--border);padding:16px 0 0}main{padding:14px}.box{padding:17px}header{padding:24px 18px}.chartbox{min-height:140px}input{width:135px}}
 </style>
 </head>
 <body>
-<h1>Mantenimiento Predictivo Edge</h1>
-<p>Litografía Editorial Piedrasanta · Clasificación local</p>
-<p class="small">Prototipo académico con lecturas simuladas.</p>
-
-<div class="box">
-<h2>Última lectura registrada</h2>
-<div id="estado" class="estado">Sin lecturas</div>
-<p id="lectura"></p>
-<p id="fecha" class="small"></p>
-<p id="aviso" role="status"></p>
+<header><div class="eyebrow">Editorial Piedrasanta · Litografía</div><h1>Mantenimiento Predictivo Edge</h1><p>Clasificación local de temperatura y vibración</p><p style="font-size:12px">Prototipo académico · Lecturas simuladas · Modelo entrenado con datos sintéticos</p></header>
+<main>
+<div class="statusline"><p class="small" id="sync" role="status">Consultando el sistema…</p><p class="small">Consulta automática cada 3 segundos · Horario de Guatemala</p></div>
+<div class="grid">
+<section class="box"><div class="heading"><h2>Última lectura registrada</h2><span class="tag">Historial local</span></div><p><span id="estado" class="estado neutral">Sin lecturas</span></p><p id="lectura">Esperando registros del Master.</p><p id="fecha" class="small"></p><p id="aviso" class="warning" role="status"></p></section>
+<section class="box"><div class="heading"><h2>Workers</h2><span class="tag">Disponibilidad</span></div><p id="workers-sync" class="small">Consultando…</p><div id="workers" class="workers"></div></section>
 </div>
-
-<div class="box">
-<h2>Enviar lectura de prueba</h2>
-<label>Temperatura °C
-<input id="temp" type="number" value="45" step="0.1"></label>
-<label>Vibración mm/s
-<input id="vib" type="number" value="2.1" step="0.1" min="0"></label>
-<button onclick="analyze()">Analizar</button>
-<br>
-<button onclick="preset(45,2.1)">Normal</button>
-<button onclick="preset(73,6.2)">Advertencia</button>
-<button onclick="preset(91,9.8)">Crítico</button>
-<details>
-<summary>Respuesta de la prueba manual</summary>
-<pre id="result">Esperando lectura...</pre>
-</details>
+<section class="box"><h2>Enviar lectura de prueba</h2><form id="form"><label for="temp">Temperatura · °C<input id="temp" type="number" value="45" step="any" required></label><label for="vib">Vibración · mm/s<input id="vib" type="number" value="2.1" step="any" min="0" required></label><button type="submit" class="send">Analizar lectura</button></form><div class="presets"><button type="button" class="send" data-t="45" data-v="2.1">Ejemplo Normal</button><button type="button" class="send" data-t="73" data-v="6.2">Ejemplo Advertencia</button><button type="button" class="send" data-t="91" data-v="9.8">Ejemplo Crítico</button></div><p id="manual-status" class="small" role="status"></p><details><summary>Ver respuesta de la prueba manual</summary><pre id="result">Esperando lectura…</pre></details></section>
+<div class="heading" style="margin:24px 0 14px"><h2>Evolución de las lecturas</h2><span id="window" class="small">Ventana de hasta 20 registros</span></div>
+<div class="grid">
+<section class="box"><h3>Temperatura · °C</h3><div id="temperature-chart" class="chartbox"></div><p id="temperature-note" class="small chartnote"></p><div class="legend"><span><i class="dot" style="background:#21824d"></i>Normal</span><span><i class="dot" style="background:#b87909"></i>Advertencia</span><span><i class="dot" style="background:#bf423b"></i>Crítico</span><span><i class="dot" style="background:#7b8999"></i>Sin clasificación</span></div></section>
+<section class="box"><h3>Vibración · mm/s</h3><div id="vibration-chart" class="chartbox"></div><p id="vibration-note" class="small chartnote"></p><p class="small">De la lectura más antigua a la más reciente. Cada punto muestra su detalle al pasar el cursor.</p></section>
 </div>
-
-<div class="box">
-<h2>Workers</h2>
-<div id="workers">Consultando...</div>
-</div>
-
-<div class="box">
-<h2>Últimos 20 registros</h2>
-<p class="small">Los registros se conservan en la Raspberry.
-La fecha se muestra en horario de Guatemala.</p>
-<div class="scroll">
-<table>
-<thead><tr>
-<th>Fecha</th><th>°C</th><th>mm/s</th>
-<th>Estado</th><th>Worker</th><th>ms*</th><th>HTTP</th>
-</tr></thead>
-<tbody id="filas"></tbody>
-</table>
-</div>
-<p class="small">* Tiempo del intercambio de predicción Master–Worker.
-Actualización cada 3 segundos.</p>
-</div>
-
+<section class="box"><div class="heading"><h2>Reparto por Worker</h2><span class="tag">Ventana visible</span></div><p id="distribution-note" class="small"></p><div id="distribution"></div><p class="small">Cuenta clasificaciones con HTTP 200 dentro de los registros mostrados. No es el total histórico del sistema.</p></section>
+<section class="box"><div class="heading"><h2>Comparación de rendimiento</h2><span class="tag">Prueba guardada · 12 oct 2026</span></div><p class="small">60 solicitudes por configuración · 4 clientes concurrentes · Una ejecución por configuración · Cliente en el Master</p><div class="metricgrid" id="benchmark"></div><div class="scroll"><table><caption>Resultados del benchmark: todas las solicitudes fueron correctas y registradas.</caption><thead><tr><th>Configuración</th><th>HTTP 200</th><th>Duración del lote</th><th>Reparto</th></tr></thead><tbody><tr><td>Un Worker local</td><td>60 / 60</td><td>2.146 s</td><td>60 local</td></tr><tr><td>Dos Workers</td><td>60 / 60</td><td>2.139 s</td><td>30 local · 30 remoto</td></tr></tbody></table></div><p class="note">El rendimiento observado fue prácticamente igual. Una sola ejecución por configuración no permite afirmar una mejora estable con dos Workers. Estas cifras son resultados guardados; no cambian con las lecturas del panel.</p><details><summary>Origen de los resultados</summary><p class="small">Archivos en evidencias/:<br>concurrencia_un_worker_20261012_213431_333976.csv<br>concurrencia_dos_workers_20261012_212940_956191.csv</p></details></section>
+<section class="box"><h2>Últimos 20 registros</h2><div class="scroll"><table><caption>Registros conservados en la Raspberry, del más reciente al más antiguo.</caption><thead><tr><th>Fecha</th><th>°C</th><th>mm/s</th><th>Estado</th><th>Worker</th><th>Latencia · ms*</th><th>HTTP</th></tr></thead><tbody id="filas"></tbody></table></div><p class="small">* Tiempo del intercambio de predicción Master–Worker; incluye la comunicación y no representa únicamente el cálculo del modelo.</p></section>
+<footer>La clasificación sintética apoya la demostración académica. No estima el tiempo restante hasta una falla mecánica.</footer>
+</main>
 <script>
-const el = id => document.getElementById(id);
-function fechaLocal(valor) {
-  const fecha = new Date(valor);
-  return Number.isNaN(fecha.getTime()) ? valor :
-    fecha.toLocaleString('es-GT', {timeZone:'America/Guatemala'});
+'use strict';
+const el=id=>document.getElementById(id);
+const STATES={'Normal':'normal','Advertencia':'advertencia','Crítico':'critico'};
+const COLORS={'Normal':'#21824d','Advertencia':'#b87909','Crítico':'#bf423b'};
+const num=value=>{if(value===null||value===undefined||typeof value==='boolean'||(typeof value==='string'&&!value.trim()))return null;const n=Number(value);return Number.isFinite(n)?n:null;};
+const fmt=(n,d=2)=>n.toLocaleString('es-GT',{minimumFractionDigits:d,maximumFractionDigits:d});
+const display=value=>value===null||value===undefined||value===''?'—':String(value);
+function fechaLocal(value,short=false){const d=new Date(value);return Number.isNaN(d.getTime())?display(value):d.toLocaleString('es-GT',short?{timeZone:'America/Guatemala',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}:{timeZone:'America/Guatemala'});}
+function node(tag,text,cls){const n=document.createElement(tag);if(text!==undefined)n.textContent=text;if(cls)n.className=cls;return n;}
+function svgNode(tag,attrs={},text){const n=document.createElementNS('http://www.w3.org/2000/svg',tag);for(const [key,value]of Object.entries(attrs))n.setAttribute(key,value);if(text!==undefined)n.textContent=text;return n;}
+function lineChart(target,records,key,title,unit,noteId){
+ const host=el(target);host.replaceChildren();const values=records.map(r=>num(r[key]));const valid=values.filter(n=>n!==null);
+ if(!valid.length){host.append(node('div','Sin lecturas numéricas para graficar.','empty'));el(noteId).textContent='';return;}
+ const W=520,H=210,L=62,R=18,T=17,B=42,pw=W-L-R,ph=H-T-B;
+ const low=Math.min(...valid),high=Math.max(...valid),pad=Math.max((high-low)*.12,key==='temperatura_c'?1:.2);
+ const min=low>=0?Math.max(0,low-pad):low-pad,max=high+pad;
+ const x=i=>L+(records.length===1?pw/2:i*pw/(records.length-1));const y=v=>T+ph-(v-min)/(max-min)*ph;
+ const svg=svgNode('svg',{viewBox:`0 0 ${W} ${H}`,class:'chart',role:'img','aria-label':`${title}. ${valid.length} valores. Mínimo ${fmt(low)}, máximo ${fmt(high)} ${unit}. Detalles en la tabla del historial.`});svg.append(svgNode('title',{},title));
+ for(let i=0;i<4;i++){const value=min+(max-min)*i/3,cy=y(value);svg.append(svgNode('line',{x1:L,y1:cy,x2:W-R,y2:cy,stroke:'#e1e8ee'}));svg.append(svgNode('text',{x:L-9,y:cy+4,'text-anchor':'end'},fmt(value,1)));}
+ let points=[];const flush=()=>{if(points.length>1)svg.append(svgNode('polyline',{points:points.join(' '),fill:'none',stroke:'#32858d','stroke-width':2,'stroke-linejoin':'round'}));points=[];};
+ values.forEach((v,i)=>{if(v===null){flush();return;}points.push(`${x(i)},${y(v)}`);});flush();
+ values.forEach((v,i)=>{if(v===null)return;const row=records[i];const c=svgNode('circle',{cx:x(i),cy:y(v),r:4,fill:COLORS[row.estado]||'#7b8999',stroke:'#fff','stroke-width':1.5});c.append(svgNode('title',{},`${fechaLocal(row.fecha_utc)} · ${fmt(v)} ${unit} · ${row.estado||'Sin clasificación'} · ${row.worker||'Sin Worker'}`));svg.append(c);});
+ const ticks=[...new Set([0,Math.floor((records.length-1)/2),records.length-1])];
+ for(const i of ticks)svg.append(svgNode('text',{x:x(i),y:H-19,'text-anchor':records.length===1?'middle':i===0?'start':i===records.length-1?'end':'middle',class:'axislabel'},fechaLocal(records[i].fecha_utc,true)));
+ host.append(svg);el(noteId).textContent=`Mínimo ${fmt(low)} · Máximo ${fmt(high)} ${unit}. Puntos espaciados por orden de registro.`;
 }
-function clase(estado) {
-  return {'Normal':'normal','Advertencia':'advertencia',
-          'Crítico':'critico'}[estado] || 'error';
+function bar(host,label,value,max,color,suffix){const row=node('div',undefined,'barrow');const caption=node('div',undefined,'barlabel');caption.append(node('span',label),node('strong',suffix));const track=node('div',undefined,'track'),fill=node('div',undefined,'fill');fill.style.width=(max>0?Math.min(100,100*value/max):0)+'%';fill.style.background=color;track.append(fill);track.setAttribute('aria-hidden','true');row.append(caption,track);host.append(row);}
+let latestRecords=[],knownWorkers=[];
+function distribution(){const counts=new Map(knownWorkers.map(id=>[id,0]));let total=0;for(const r of latestRecords){if(Number(r.http_status)===200&&Object.hasOwn(STATES,r.estado)&&r.worker){counts.set(r.worker,(counts.get(r.worker)||0)+1);total++;}}
+ const host=el('distribution');host.replaceChildren();el('distribution-note').textContent=`${total} clasificaciones exitosas de ${latestRecords.length} registros visibles.`;
+ if(!counts.size){host.append(node('p','Sin clasificaciones por Worker en esta ventana.','small'));return;}
+ let i=0;for(const [id,count]of counts){bar(host,id,count,total,i++%2?'#087f82':'#2158a5',`${count} · ${total?fmt(count/total*100,0):0} %`);}
 }
-async function obtener(url) {
-  const respuesta = await fetch(url, {cache:'no-store'});
-  if (!respuesta.ok) throw new Error('Error HTTP ' + respuesta.status);
-  return respuesta.json();
+function mostrarHistorial(data){if(!data||!Array.isArray(data.readings)||data.readings.some(r=>!r||typeof r!=='object'))throw new Error('Formato de historial inválido');latestRecords=data.readings.slice(0,20);el('filas').replaceChildren();
+ for(const r of latestRecords){const tr=node('tr');for(const value of [fechaLocal(r.fecha_utc),r.temperatura_c,r.vibracion_mm_s,r.estado||r.error||'Sin resultado',r.worker,r.latencia_worker_ms,r.http_status])tr.append(node('td',display(value)));el('filas').append(tr);}
+ if(!latestRecords.length){const tr=node('tr'),td=node('td','No hay registros disponibles.');td.colSpan=7;tr.append(td);el('filas').append(tr);el('estado').textContent='Sin lecturas';el('estado').className='estado neutral';el('lectura').textContent='Envía una lectura para comenzar.';el('fecha').textContent='';el('aviso').textContent='';}
+ else{const r=latestRecords[0];el('estado').textContent=r.estado||'Sin resultado';el('estado').className='estado '+(STATES[r.estado]||'error');el('lectura').textContent=`${display(r.temperatura_c)} °C · ${display(r.vibracion_mm_s)} mm/s · Worker: ${r.worker||'ninguno'}`;el('fecha').textContent=fechaLocal(r.fecha_utc);el('aviso').textContent=r.error||'';}
+ const chronological=[...latestRecords].reverse();el('window').textContent=`${latestRecords.length} registros visibles · Hasta 20 por consulta`;
+ lineChart('temperature-chart',chronological,'temperatura_c','Temperatura en los registros visibles','°C','temperature-note');lineChart('vibration-chart',chronological,'vibracion_mm_s','Vibración en los registros visibles','mm/s','vibration-note');distribution();
 }
-function mostrarHistorial(datos) {
-  const registros = datos.readings;
-  el('filas').replaceChildren();
-  for (const fila of registros) {
-    const tr = document.createElement('tr');
-    const valores = [
-      fechaLocal(fila.fecha_utc), fila.temperatura_c,
-      fila.vibracion_mm_s, fila.estado || fila.error || 'Sin resultado',
-      fila.worker || '—', fila.latencia_worker_ms || '—',
-      fila.http_status
-    ];
-    for (const valor of valores) {
-      const td = document.createElement('td');
-      td.textContent = valor;
-      tr.appendChild(td);
-    }
-    el('filas').appendChild(tr);
-  }
-  if (!registros.length) return;
-  const ultima = registros[0];
-  const estado = ultima.estado || 'Sin resultado';
-  el('estado').textContent = estado;
-  el('estado').className = 'estado ' + clase(estado);
-  el('lectura').textContent =
-    `${ultima.temperatura_c} °C · ${ultima.vibracion_mm_s} mm/s · Worker: ${ultima.worker || 'ninguno'}`;
-  el('fecha').textContent = fechaLocal(ultima.fecha_utc);
-  el('aviso').textContent = ultima.error || '';
+function mostrarWorkers(data){if(!data||!Array.isArray(data.workers)||data.workers.some(w=>!w||typeof w!=='object'))throw new Error('Formato de Workers inválido');el('workers').replaceChildren();knownWorkers=data.workers.map(w=>w.id);
+ for(const w of data.workers){const ready=w.available===true&&w.detail?.model_ready===true;const card=node('div',undefined,'worker');const info=node('div');info.append(node('strong',display(w.id)));card.append(info,node('span',ready?'Disponible · modelo listo':w.available===true?'Modelo pendiente':'No disponible','pill '+(ready?'normal':'error')));el('workers').append(card);}
+ if(!data.workers.length)el('workers').append(node('p','No hay Workers configurados.','small'));distribution();
 }
-function mostrarWorkers(datos) {
-  el('workers').replaceChildren();
-  for (const worker of datos.workers) {
-    const p = document.createElement('p');
-    const listo = worker.available && worker.detail &&
-                  worker.detail.model_ready === true;
-    p.textContent = `${worker.id}: ${
-      listo ? 'Disponible · modelo listo' :
-      worker.available ? 'Modelo pendiente' : 'No disponible'
-    }`;
-    p.className = listo ? 'normal' : 'error';
-    el('workers').appendChild(p);
-  }
-}
-let actualizando = false;
-async function actualizar() {
-  if (actualizando) return;
-  actualizando = true;
-  try {
-    const resultados = await Promise.allSettled([
-      obtener('/api/history'), obtener('/api/status')
-    ]);
-    if (resultados[0].status === 'fulfilled')
-      mostrarHistorial(resultados[0].value);
-    if (resultados[1].status === 'fulfilled')
-      mostrarWorkers(resultados[1].value);
-    if (resultados.some(r => r.status === 'rejected'))
-      el('aviso').textContent =
-        'No se pudo actualizar todo el panel; los datos visibles pueden ser anteriores.';
-  } finally {
-    actualizando = false;
-  }
-}
-function preset(t,v) {
-  el('temp').value=t;
-  el('vib').value=v;
-  analyze();
-}
-async function analyze() {
-  const temperatura = el('temp').value;
-  const vibracion = el('vib').value;
-  if (!temperatura.trim() || !vibracion.trim()) {
-    el('result').textContent='Ingresá ambas lecturas.';
-    return;
-  }
-  try {
-    const r = await fetch('/api/analyze', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        temperatura_c:Number(temperatura),
-        vibracion_mm_s:Number(vibracion)
-      })
-    });
-    el('result').textContent=JSON.stringify(await r.json(),null,2);
-    await actualizar();
-  } catch (error) {
-    el('result').textContent='No se pudo enviar la lectura: '+error.message;
-  }
-}
-actualizar();
-setInterval(actualizar,3000);
+async function obtener(url){const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),15000);try{const r=await fetch(url,{cache:'no-store',signal:controller.signal});if(!r.ok)throw new Error(`HTTP ${r.status}`);return await r.json();}finally{clearTimeout(timeout);}}
+let pendingUpdate=null,lastHistory=null,lastWorkers=null;
+function actualizar(){if(pendingUpdate)return pendingUpdate;pendingUpdate=(async()=>{const results=await Promise.allSettled([obtener('/api/history'),obtener('/api/status')]);let historyOK=false,workersOK=false;
+ if(results[0].status==='fulfilled'){try{mostrarHistorial(results[0].value);lastHistory=new Date().toISOString();historyOK=true;}catch(e){/* Se informa abajo sin ocultar los datos anteriores. */}}
+ if(results[1].status==='fulfilled'){try{mostrarWorkers(results[1].value);lastWorkers=new Date().toISOString();workersOK=true;}catch(e){/* Se informa abajo sin afirmar disponibilidad vigente. */}}
+ el('sync').textContent=historyOK?`Historial consultado a las ${fechaLocal(lastHistory,true)}`:`No se pudo consultar el historial. ${lastHistory?'Última consulta: '+fechaLocal(lastHistory,true)+'. Datos anteriores.':'Sin conexión confirmada.'}`;el('sync').className=historyOK?'small':'small warning';
+ el('workers-sync').textContent=workersOK?`Consultados a las ${fechaLocal(lastWorkers,true)}`:'Consulta fallida. Disponibilidad actual desconocida.';el('workers-sync').className=workersOK?'small':'small warning';if(!workersOK){el('workers').replaceChildren(node('p','Esperando una nueva consulta de los Workers.','small'));}
+ })().finally(()=>{pendingUpdate=null;});return pendingUpdate;}
+let sending=false;
+async function analyze(){if(sending)return;const temperature=num(el('temp').value),vibration=num(el('vib').value);if(temperature===null||vibration===null||vibration<0){el('manual-status').textContent='Ingresa dos números finitos; la vibración debe ser mayor o igual a cero.';return;}
+ sending=true;document.querySelectorAll('.send').forEach(b=>b.disabled=true);el('manual-status').textContent='Procesando lectura…';const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),20000);
+ try{const r=await fetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},signal:controller.signal,body:JSON.stringify({temperatura_c:temperature,vibracion_mm_s:vibration})});const data=await r.json();el('result').textContent=JSON.stringify(data,null,2);el('manual-status').textContent=r.ok?`Resultado: ${data.state||'Sin clasificación'} · Worker: ${data.worker||'—'}${data.historial_guardado===false?' · No se pudo guardar el historial.':''}`:`HTTP ${r.status}: ${data.error||'No se pudo clasificar la lectura.'}`;
+ if(pendingUpdate)await pendingUpdate;await actualizar();
+ }catch(e){el('manual-status').textContent=e.name==='AbortError'?'Se agotó la espera; consulta el historial antes de repetir la lectura.':'No se pudo confirmar la lectura: '+e.message;el('result').textContent=el('manual-status').textContent;}finally{clearTimeout(timeout);sending=false;document.querySelectorAll('.send').forEach(b=>b.disabled=false);}}
+el('form').addEventListener('submit',event=>{event.preventDefault();analyze();});document.querySelectorAll('[data-t]').forEach(button=>button.addEventListener('click',()=>{el('temp').value=button.dataset.t;el('vib').value=button.dataset.v;analyze();}));
+for(const metric of [{name:'Latencia promedio',unit:'ms',digits:2,values:[140.04,139.11],hint:'Menor tiempo es mejor'},{name:'Percentil 95',unit:'ms',digits:3,values:[330.713,334.259],hint:'Menor tiempo es mejor'},{name:'Respuestas exitosas',unit:'solicitudes/s',digits:2,values:[27.96,28.05],hint:'Mayor tasa es mejor'}]){const host=node('div',undefined,'metric');host.append(node('h3',metric.name),node('p',`${metric.unit} · ${metric.hint}`,'small'));const max=Math.max(...metric.values)*1.1;metric.values.forEach((value,i)=>bar(host,i?'Dos Workers':'Un Worker local',value,max,i?'#087f82':'#2158a5',fmt(value,metric.digits)));host.append(node('p','Escala desde cero.','small'));el('benchmark').append(host);}
+mostrarHistorial({readings:[]});actualizar();setInterval(actualizar,3000);
 </script>
 </body>
 </html>
