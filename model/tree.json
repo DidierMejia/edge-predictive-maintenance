@@ -1,0 +1,81 @@
+{
+  "algorithm": "DecisionTreeClassifier",
+  "features": [
+    "temperatura_c",
+    "vibracion_mm_s"
+  ],
+  "classes": [
+    "Advertencia",
+    "Crítico",
+    "Normal"
+  ],
+  "test_accuracy": 0.94,
+  "tree": {
+    "type": "split",
+    "feature": "vibracion_mm_s",
+    "threshold": 4.265,
+    "left": {
+      "type": "split",
+      "feature": "temperatura_c",
+      "threshold": 61.405,
+      "left": {
+        "type": "split",
+        "feature": "vibracion_mm_s",
+        "threshold": 4.155,
+        "left": {
+          "type": "split",
+          "feature": "temperatura_c",
+          "threshold": 60.295,
+          "left": {
+            "type": "leaf",
+            "state": "Normal"
+          },
+          "right": {
+            "type": "leaf",
+            "state": "Normal"
+          }
+        },
+        "right": {
+          "type": "leaf",
+          "state": "Normal"
+        }
+      },
+      "right": {
+        "type": "leaf",
+        "state": "Advertencia"
+      }
+    },
+    "right": {
+      "type": "split",
+      "feature": "vibracion_mm_s",
+      "threshold": 7.21,
+      "left": {
+        "type": "split",
+        "feature": "temperatura_c",
+        "threshold": 80.535,
+        "left": {
+          "type": "split",
+          "feature": "vibracion_mm_s",
+          "threshold": 6.995,
+          "left": {
+            "type": "leaf",
+            "state": "Advertencia"
+          },
+          "right": {
+            "type": "leaf",
+            "state": "Advertencia"
+          }
+        },
+        "right": {
+          "type": "leaf",
+          "state": "Crítico"
+        }
+      },
+      "right": {
+        "type": "leaf",
+        "state": "Crítico"
+      }
+    }
+  },
+  "note": "Modelo académico entrenado con datos sintéticos controlados."
+}

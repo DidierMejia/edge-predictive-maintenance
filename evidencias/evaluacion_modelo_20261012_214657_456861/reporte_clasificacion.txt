@@ -1,0 +1,9 @@
+              precision    recall  f1-score   support
+
+ Advertencia      0.882     0.938     0.909        32
+     Crítico      1.000     0.938     0.968        32
+      Normal      0.944     0.944     0.944        36
+
+    accuracy                          0.940       100
+   macro avg      0.942     0.940     0.940       100
+weighted avg      0.942     0.940     0.941       100

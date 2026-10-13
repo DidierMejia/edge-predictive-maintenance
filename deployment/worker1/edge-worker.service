@@ -1,0 +1,14 @@
+[Unit]
+Description=Worker de inferencia Piedrasanta
+After=network.target
+
+[Service]
+User=didier
+WorkingDirectory=/home/didier/edge_predictive_maintenance
+Environment=WORKER_ID=edge-worker1
+ExecStart=/home/didier/edge_predictive_maintenance/.venv/bin/python worker/app.py
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

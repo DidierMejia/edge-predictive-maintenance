@@ -1,0 +1,3 @@
+{"error":"No hay Workers disponibles.","historial_guardado":true,"skipped_workers":["edge-worker-local","edge-worker1"]}
+
+HTTP 503

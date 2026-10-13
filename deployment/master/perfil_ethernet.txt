@@ -1,0 +1,9 @@
+connection.id:                          edge-lan
+connection.interface-name:              eth0
+connection.autoconnect:                 no
+ipv4.method:                            manual
+ipv4.addresses:                         192.168.100.10/24
+ipv4.gateway:                           --
+ipv4.dns:                               --
+ipv4.never-default:                     yes
+ipv6.method:                            disabled

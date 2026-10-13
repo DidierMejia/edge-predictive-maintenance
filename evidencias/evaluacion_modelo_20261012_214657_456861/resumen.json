@@ -1,0 +1,15 @@
+{
+  "total_lecturas": 500,
+  "entrenamiento": 400,
+  "prueba": 100,
+  "aciertos_json": 94,
+  "errores_json": 6,
+  "exactitud_sklearn": 0.94,
+  "exactitud_json": 0.94,
+  "diferencias_sklearn_json": 0,
+  "clases": [
+    "Advertencia",
+    "Crítico",
+    "Normal"
+  ]
+}

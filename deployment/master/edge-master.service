@@ -1,0 +1,14 @@
+[Unit]
+Description=Master de mantenimiento predictivo Piedrasanta
+After=network.target edge-worker.service
+Wants=edge-worker.service
+
+[Service]
+User=didier
+WorkingDirectory=/home/didier/edge_predictive_maintenance
+ExecStart=/home/didier/edge_predictive_maintenance/.venv/bin/python master/app.py
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

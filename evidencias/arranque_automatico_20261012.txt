@@ -1,0 +1,5 @@
+2026-10-12T22:10:44-06:00
+ 22:10:44 up 3 min,  1 user,  load average: 0.17, 0.36, 0.17
+active
+active
+{"workers":[{"available":true,"detail":{"model_ready":true,"status":"ok","worker":"edge-worker1"},"id":"edge-worker1","url":"http://192.168.0.36:5000"},{"available":true,"detail":{"model_ready":true,"status":"ok","worker":"edge-worker-local"},"id":"edge-worker-local","url":"http://127.0.0.1:5000"}]}

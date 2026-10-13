@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mantenimiento Edge Piedrasanta</title>
+<style>
+body{font-family:Arial,sans-serif;max-width:1100px;margin:25px auto;padding:0 16px;background:#f4f6f8;color:#17233c}
+h1{color:#17365d}
+.box{background:white;padding:20px;border-radius:12px;margin:16px 0;box-shadow:0 2px 8px #ddd}
+input,button{padding:10px;margin:5px;font-size:16px}
+input{width:120px}
+button{background:#17365d;color:white;border:0;border-radius:6px;cursor:pointer}
+.estado{display:inline-block;padding:12px 20px;border-radius:8px;font-size:24px;font-weight:bold;background:#e5e7eb}
+.normal{background:#dcfce7;color:#166534}
+.advertencia{background:#fef3c7;color:#92400e}
+.critico,.error{background:#fee2e2;color:#991b1b}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:10px;text-align:left;border-bottom:1px solid #ddd}
+th{background:#e8eef5}
+.scroll{overflow:auto}
+pre{white-space:pre-wrap;overflow-wrap:anywhere}
+.small{color:#536176;font-size:14px}
+</style>
+</head>
+<body>
+<h1>Mantenimiento Predictivo Edge</h1>
+<p>Litografía Editorial Piedrasanta · Clasificación local</p>
+<p class="small">Prototipo académico con lecturas simuladas.</p>
+
+<div class="box">
+<h2>Última lectura registrada</h2>
+<div id="estado" class="estado">Sin lecturas</div>
+<p id="lectura"></p>
+<p id="fecha" class="small"></p>
+<p id="aviso" role="status"></p>
+</div>
+
+<div class="box">
+<h2>Enviar lectura de prueba</h2>
+<label>Temperatura °C
+<input id="temp" type="number" value="45" step="0.1"></label>
+<label>Vibración mm/s
+<input id="vib" type="number" value="2.1" step="0.1" min="0"></label>
+<button onclick="analyze()">Analizar</button>
+<br>
+<button onclick="preset(45,2.1)">Normal</button>
+<button onclick="preset(73,6.2)">Advertencia</button>
+<button onclick="preset(91,9.8)">Crítico</button>
+<details>
+<summary>Respuesta de la prueba manual</summary>
+<pre id="result">Esperando lectura...</pre>
+</details>
+</div>
+
+<div class="box">
+<h2>Workers</h2>
+<div id="workers">Consultando...</div>
+</div>
+
+<div class="box">
+<h2>Últimos 20 registros</h2>
+<p class="small">Los registros se conservan en la Raspberry.
+La fecha se muestra en horario de Guatemala.</p>
+<div class="scroll">
+<table>
+<thead><tr>
+<th>Fecha</th><th>°C</th><th>mm/s</th>
+<th>Estado</th><th>Worker</th><th>ms*</th><th>HTTP</th>
+</tr></thead>
+<tbody id="filas"></tbody>
+</table>
+</div>
+<p class="small">* Tiempo del intercambio de predicción Master–Worker.
+Actualización cada 3 segundos.</p>
+</div>
+
+<script>
+const el = id => document.getElementById(id);
+function fechaLocal(valor) {
+  const fecha = new Date(valor);
+  return Number.isNaN(fecha.getTime()) ? valor :
+    fecha.toLocaleString('es-GT', {timeZone:'America/Guatemala'});
+}
+function clase(estado) {
+  return {'Normal':'normal','Advertencia':'advertencia',
+          'Crítico':'critico'}[estado] || 'error';
+}
+async function obtener(url) {
+  const respuesta = await fetch(url, {cache:'no-store'});
+  if (!respuesta.ok) throw new Error('Error HTTP ' + respuesta.status);
+  return respuesta.json();
+}
+function mostrarHistorial(datos) {
+  const registros = datos.readings;
+  el('filas').replaceChildren();
+  for (const fila of registros) {
+    const tr = document.createElement('tr');
+    const valores = [
+      fechaLocal(fila.fecha_utc), fila.temperatura_c,
+      fila.vibracion_mm_s, fila.estado || fila.error || 'Sin resultado',
+      fila.worker || '—', fila.latencia_worker_ms || '—',
+      fila.http_status
+    ];
+    for (const valor of valores) {
+      const td = document.createElement('td');
+      td.textContent = valor;
+      tr.appendChild(td);
+    }
+    el('filas').appendChild(tr);
+  }
+  if (!registros.length) return;
+  const ultima = registros[0];
+  const estado = ultima.estado || 'Sin resultado';
+  el('estado').textContent = estado;
+  el('estado').className = 'estado ' + clase(estado);
+  el('lectura').textContent =
+    `${ultima.temperatura_c} °C · ${ultima.vibracion_mm_s} mm/s · Worker: ${ultima.worker || 'ninguno'}`;
+  el('fecha').textContent = fechaLocal(ultima.fecha_utc);
+  el('aviso').textContent = ultima.error || '';
+}
+function mostrarWorkers(datos) {
+  el('workers').replaceChildren();
+  for (const worker of datos.workers) {
+    const p = document.createElement('p');
+    const listo = worker.available && worker.detail &&
+                  worker.detail.model_ready === true;
+    p.textContent = `${worker.id}: ${
+      listo ? 'Disponible · modelo listo' :
+      worker.available ? 'Modelo pendiente' : 'No disponible'
+    }`;
+    p.className = listo ? 'normal' : 'error';
+    el('workers').appendChild(p);
+  }
+}
+let actualizando = false;
+async function actualizar() {
+  if (actualizando) return;
+  actualizando = true;
+  try {
+    const resultados = await Promise.allSettled([
+      obtener('/api/history'), obtener('/api/status')
+    ]);
+    if (resultados[0].status === 'fulfilled')
+      mostrarHistorial(resultados[0].value);
+    if (resultados[1].status === 'fulfilled')
+      mostrarWorkers(resultados[1].value);
+    if (resultados.some(r => r.status === 'rejected'))
+      el('aviso').textContent =
+        'No se pudo actualizar todo el panel; los datos visibles pueden ser anteriores.';
+  } finally {
+    actualizando = false;
+  }
+}
+function preset(t,v) {
+  el('temp').value=t;
+  el('vib').value=v;
+  analyze();
+}
+async function analyze() {
+  const temperatura = el('temp').value;
+  const vibracion = el('vib').value;
+  if (!temperatura.trim() || !vibracion.trim()) {
+    el('result').textContent='Ingresá ambas lecturas.';
+    return;
+  }
+  try {
+    const r = await fetch('/api/analyze', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        temperatura_c:Number(temperatura),
+        vibracion_mm_s:Number(vibracion)
+      })
+    });
+    el('result').textContent=JSON.stringify(await r.json(),null,2);
+    await actualizar();
+  } catch (error) {
+    el('result').textContent='No se pudo enviar la lectura: '+error.message;
+  }
+}
+actualizar();
+setInterval(actualizar,3000);
+</script>
+</body>
+</html>

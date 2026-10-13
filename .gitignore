@@ -1,0 +1,31 @@
+
+# Entornos y archivos generados por Python
+.venv*/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Credenciales locales
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Respaldos y versiones temporales
+*.tar.gz
+*.bak
+*.tmp
+/master/app.antes_*.py
+/config/nodes.antes_*.json
+/config/nodes.original.json
+/config/nodes.solo_remoto.json
+
+# Historial operativo: se genera al ejecutar el sistema
+/evidencias/historial_lecturas.csv
+
+# Archivos temporales de Office y del sistema
+~$*
+.DS_Store
+Thumbs.db

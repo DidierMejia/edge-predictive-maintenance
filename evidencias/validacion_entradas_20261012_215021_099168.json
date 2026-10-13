@@ -1,0 +1,43 @@
+[
+  {
+    "caso": "Campos faltantes",
+    "entrada": {},
+    "http_esperado": 400,
+    "http_obtenido": 400,
+    "cumple": true,
+    "respuesta": "{\"error\":\"Ingrese temperatura y vibraci\\u00f3n v\\u00e1lidas.\"}\n"
+  },
+  {
+    "caso": "Temperatura con texto",
+    "entrada": {
+      "temperatura_c": "abc",
+      "vibracion_mm_s": 2.1
+    },
+    "http_esperado": 400,
+    "http_obtenido": 400,
+    "cumple": true,
+    "respuesta": "{\"error\":\"Ingrese temperatura y vibraci\\u00f3n v\\u00e1lidas.\"}\n"
+  },
+  {
+    "caso": "Vibracion negativa",
+    "entrada": {
+      "temperatura_c": 45,
+      "vibracion_mm_s": -1
+    },
+    "http_esperado": 400,
+    "http_obtenido": 200,
+    "cumple": false,
+    "respuesta": "{\"algorithm\":\"DecisionTreeClassifier\",\"cluster_latency_ms\":22.413,\"historial_guardado\":true,\"latency_ms\":0.044,\"model_ready\":true,\"skipped_workers\":[],\"state\":\"Normal\",\"temperatura_c\":45.0,\"validation_accuracy\":0.94,\"vibracion_mm_s\":-1.0,\"worker\":\"edge-worker1\"}\n"
+  },
+  {
+    "caso": "Lectura valida",
+    "entrada": {
+      "temperatura_c": 45,
+      "vibracion_mm_s": 2.1
+    },
+    "http_esperado": 200,
+    "http_obtenido": 200,
+    "cumple": true,
+    "respuesta": "{\"algorithm\":\"DecisionTreeClassifier\",\"cluster_latency_ms\":17.301,\"historial_guardado\":true,\"latency_ms\":0.042,\"model_ready\":true,\"skipped_workers\":[],\"state\":\"Normal\",\"temperatura_c\":45.0,\"validation_accuracy\":0.94,\"vibracion_mm_s\":2.1,\"worker\":\"edge-worker-local\"}\n"
+  }
+]
