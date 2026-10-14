@@ -55,6 +55,7 @@ def distribute(payload: dict):
 
 HISTORIAL = ROOT / "evidencias" / "historial_lecturas.csv"
 HISTORIAL_LOCK = Lock()
+SENSOR_SNAPSHOT = ROOT / "runtime" / "sensor_latest.json"
 
 
 def guardar_historial(payload, answer, code):
@@ -105,6 +106,24 @@ def api_history():
 @app.get("/api/status")
 def api_status():
     return jsonify({"workers": [status(worker) for worker in WORKERS]})
+
+
+@app.get("/api/sensor")
+def api_sensor():
+    """Muestras reales del ESP32; no alimentan el modelo sintético."""
+    try:
+        data = json.loads(SENSOR_SNAPSHOT.read_text(encoding="utf-8"))
+        readings = data["readings"]
+        if not isinstance(readings, list) or not readings:
+            raise ValueError("Sin lecturas")
+        seen = datetime.fromisoformat(readings[-1]["fecha_recepcion_utc"])
+        if seen.tzinfo is None:
+            raise ValueError("Fecha sin zona horaria")
+        age = max(0, (datetime.now(timezone.utc) - seen).total_seconds())
+        return jsonify({"connected": age <= 10, "age_s": round(age, 1),
+                        "readings": readings[-20:]})
+    except (OSError, ValueError, KeyError, TypeError, IndexError):
+        return jsonify({"connected": False, "age_s": None, "readings": []})
 
 
 @app.post("/api/analyze")

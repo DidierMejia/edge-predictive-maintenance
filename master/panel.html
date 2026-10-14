@@ -16,9 +16,10 @@ form{display:flex;gap:12px;align-items:end;flex-wrap:wrap;margin:12px 0}label{fo
 </style>
 </head>
 <body>
-<header><div class="eyebrow">Editorial Piedrasanta · Litografía</div><h1>Mantenimiento Predictivo Edge</h1><p>Clasificación local de temperatura y vibración</p><p style="font-size:12px">Prototipo académico · Lecturas simuladas · Modelo entrenado con datos sintéticos</p></header>
+<header><div class="eyebrow">Editorial Piedrasanta · Litografía</div><h1>Mantenimiento Predictivo Edge</h1><p>Sensores reales y demostración de inferencia local</p><p style="font-size:12px">Prototipo académico · Modelo de clasificación entrenado con datos sintéticos</p></header>
 <main>
 <div class="statusline"><p class="small" id="sync" role="status">Consultando el sistema…</p><p class="small">Consulta automática cada 3 segundos · Horario de Guatemala</p></div>
+<section class="box"><div class="heading"><h2>Sensores reales · ESP32 por USB</h2><span id="sensor-state" class="pill neutral" role="status">Consultando…</span></div><p id="sensor-timestamp" class="small">Esperando datos del ESP32.</p><div class="metricgrid"><div class="metric"><h3>Temperatura · DS18B20</h3><p id="sensor-temp" class="count">—</p></div><div class="metric"><h3>Aceleración · ADXL345</h3><p id="sensor-axes">X — · Y — · Z —</p><p class="small">Ejes en m/s²; incluyen la gravedad. No son velocidad de vibración en mm/s.</p></div><div class="metric"><h3>Transmisión</h3><p id="sensor-seq">Secuencia —</p><p id="sensor-age" class="small"></p></div></div><details><summary>Ver las últimas muestras reales</summary><div class="scroll"><table><thead><tr><th>Recibida</th><th>Secuencia</th><th>°C</th><th>X · m/s²</th><th>Y · m/s²</th><th>Z · m/s²</th></tr></thead><tbody id="sensor-rows"></tbody></table></div></details><p class="note">Estas lecturas provienen del hardware. El modelo actual utiliza datos de demostración en °C y mm/s; la aceleración real todavía requiere muestreo y calibración para alimentar una clasificación física.</p></section>
 <div class="grid">
 <section class="box"><div class="heading"><h2>Última lectura registrada</h2><span class="tag">Historial local</span></div><p><span id="estado" class="estado neutral">Sin lecturas</span></p><p id="lectura">Esperando registros del Master.</p><p id="fecha" class="small"></p><p id="aviso" class="warning" role="status"></p></section>
 <section class="box"><div class="heading"><h2>Workers</h2><span class="tag">Disponibilidad</span></div><p id="workers-sync" class="small">Consultando…</p><div id="workers" class="workers"></div></section>
@@ -42,6 +43,15 @@ const COLORS={'Normal':'#21824d','Advertencia':'#b87909','Crítico':'#bf423b'};
 const num=value=>{if(value===null||value===undefined||typeof value==='boolean'||(typeof value==='string'&&!value.trim()))return null;const n=Number(value);return Number.isFinite(n)?n:null;};
 const fmt=(n,d=2)=>n.toLocaleString('es-GT',{minimumFractionDigits:d,maximumFractionDigits:d});
 const display=value=>value===null||value===undefined||value===''?'—':String(value);
+function mostrarSensor(data){if(!data||!Array.isArray(data.readings))throw new Error('Formato de sensor inválido');const rows=data.readings;const latest=rows.at(-1);const connected=data.connected===true;
+ const axes=latest?.lectura;const accelerationOK=connected&&axes&&[axes.ax_m_s2,axes.ay_m_s2,axes.az_m_s2].every(v=>num(v)!==null)&&[axes.ax_m_s2,axes.ay_m_s2,axes.az_m_s2].some(v=>Number(v)!==0);
+ el('sensor-state').textContent=!connected?'Sin datos recientes':accelerationOK?'Recibiendo lecturas':'Revisar ADXL345';el('sensor-state').className='pill '+(connected&&accelerationOK?'normal':'error');
+ el('sensor-timestamp').textContent=latest?`Última muestra recibida: ${fechaLocal(latest.fecha_recepcion_utc)} · edge-sensor-01`:'Aún no se reciben lecturas del ESP32.';
+ el('sensor-temp').textContent=connected&&latest?.lectura?.temperatura_ok===true&&num(latest.lectura.temperatura_c)!==null?`${fmt(Number(latest.lectura.temperatura_c))} °C`:'—';
+ el('sensor-axes').textContent=accelerationOK?`X ${display(axes.ax_m_s2)} · Y ${display(axes.ay_m_s2)} · Z ${display(axes.az_m_s2)}`:connected?'Sin medición válida · revisar conexión I²C':'X — · Y — · Z —';
+ el('sensor-seq').textContent=connected&&latest?.lectura?`Secuencia ${display(latest.lectura.secuencia)}`:'Secuencia —';el('sensor-age').textContent=latest?`Último dato hace ${display(data.age_s)} s`:'';
+ el('sensor-rows').replaceChildren();for(const item of [...rows].reverse()){const tr=node('tr');const r=item.lectura||{};for(const value of [fechaLocal(item.fecha_recepcion_utc),r.secuencia,r.temperatura_ok?r.temperatura_c:'—',r.ax_m_s2,r.ay_m_s2,r.az_m_s2])tr.append(node('td',display(value)));el('sensor-rows').append(tr);}
+}
 function fechaLocal(value,short=false){const d=new Date(value);return Number.isNaN(d.getTime())?display(value):d.toLocaleString('es-GT',short?{timeZone:'America/Guatemala',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}:{timeZone:'America/Guatemala'});}
 function node(tag,text,cls){const n=document.createElement(tag);if(text!==undefined)n.textContent=text;if(cls)n.className=cls;return n;}
 function svgNode(tag,attrs={},text){const n=document.createElementNS('http://www.w3.org/2000/svg',tag);for(const [key,value]of Object.entries(attrs))n.setAttribute(key,value);if(text!==undefined)n.textContent=text;return n;}
@@ -81,9 +91,10 @@ function mostrarWorkers(data){if(!data||!Array.isArray(data.workers)||data.worke
 }
 async function obtener(url){const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),15000);try{const r=await fetch(url,{cache:'no-store',signal:controller.signal});if(!r.ok)throw new Error(`HTTP ${r.status}`);return await r.json();}finally{clearTimeout(timeout);}}
 let pendingUpdate=null,lastHistory=null,lastWorkers=null;
-function actualizar(){if(pendingUpdate)return pendingUpdate;pendingUpdate=(async()=>{const results=await Promise.allSettled([obtener('/api/history'),obtener('/api/status')]);let historyOK=false,workersOK=false;
+function actualizar(){if(pendingUpdate)return pendingUpdate;pendingUpdate=(async()=>{const results=await Promise.allSettled([obtener('/api/history'),obtener('/api/status'),obtener('/api/sensor')]);let historyOK=false,workersOK=false;
  if(results[0].status==='fulfilled'){try{mostrarHistorial(results[0].value);lastHistory=new Date().toISOString();historyOK=true;}catch(e){/* Se informa abajo sin ocultar los datos anteriores. */}}
  if(results[1].status==='fulfilled'){try{mostrarWorkers(results[1].value);lastWorkers=new Date().toISOString();workersOK=true;}catch(e){/* Se informa abajo sin afirmar disponibilidad vigente. */}}
+ if(results[2].status==='fulfilled'){try{mostrarSensor(results[2].value);}catch(e){el('sensor-state').textContent='Lectura inválida';el('sensor-state').className='pill error';}}else{el('sensor-state').textContent='Consulta fallida';el('sensor-state').className='pill error';el('sensor-temp').textContent='—';el('sensor-axes').textContent='X — · Y — · Z —';}
  el('sync').textContent=historyOK?`Historial consultado a las ${fechaLocal(lastHistory,true)}`:`No se pudo consultar el historial. ${lastHistory?'Última consulta: '+fechaLocal(lastHistory,true)+'. Datos anteriores.':'Sin conexión confirmada.'}`;el('sync').className=historyOK?'small':'small warning';
  el('workers-sync').textContent=workersOK?`Consultados a las ${fechaLocal(lastWorkers,true)}`:'Consulta fallida. Disponibilidad actual desconocida.';el('workers-sync').className=workersOK?'small':'small warning';if(!workersOK){el('workers').replaceChildren(node('p','Esperando una nueva consulta de los Workers.','small'));}
  })().finally(()=>{pendingUpdate=null;});return pendingUpdate;}
