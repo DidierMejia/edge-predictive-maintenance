@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import csv
+import os
 from datetime import datetime, timezone
 from threading import Lock
 from itertools import cycle
@@ -12,7 +13,9 @@ import requests
 from flask import Flask, jsonify, render_template_string, request
 
 ROOT = Path(__file__).resolve().parents[1]
-WORKERS = json.loads((ROOT / "config" / "nodes.json").read_text())["workers"]
+# Permite mantener una configuración local sin alterar el archivo principal.
+CONFIG_PATH = Path(os.getenv("NODES_CONFIG", str(ROOT / "config" / "nodes.json")))
+WORKERS = json.loads(CONFIG_PATH.read_text(encoding="utf-8"))["workers"]
 ROUND_ROBIN = cycle(WORKERS)
 app = Flask(__name__)
 
@@ -56,6 +59,7 @@ def distribute(payload: dict):
 HISTORIAL = ROOT / "evidencias" / "historial_lecturas.csv"
 HISTORIAL_LOCK = Lock()
 SENSOR_SNAPSHOT = ROOT / "runtime" / "sensor_latest.json"
+PHASE2_RAW = ROOT / "data" / "real" / "raw"
 
 
 def guardar_historial(payload, answer, code):
@@ -124,6 +128,35 @@ def api_sensor():
                         "readings": readings[-20:]})
     except (OSError, ValueError, KeyError, TypeError, IndexError):
         return jsonify({"connected": False, "age_s": None, "readings": []})
+
+
+@app.get("/api/phase2")
+def api_phase2():
+    """Metadatos de las sesiones reales; las muestras quedan locales."""
+    sessions = []
+    if PHASE2_RAW.exists():
+        for folder in sorted(PHASE2_RAW.iterdir(), reverse=True):
+            metadata = folder / "session.json"
+            if not folder.is_dir() or not metadata.exists():
+                continue
+            try:
+                item = json.loads(metadata.read_text(encoding="utf-8"))
+                sessions.append({key: item.get(key) for key in (
+                    "session_id", "label", "started_utc", "finished_utc", "accepted_readings"
+                )})
+            except (OSError, ValueError, TypeError):
+                continue
+    totals = {"normal_reposo": 0, "normal_impresion": 0, "readings": 0}
+    for item in sessions:
+        if item.get("label") in totals:
+            totals[item["label"]] += 1
+        try:
+            totals["readings"] += int(item.get("accepted_readings") or 0)
+        except (TypeError, ValueError):
+            pass
+    return jsonify({"sessions": sessions[:12], "totals": totals,
+                    "target_sessions_per_label": 3,
+                    "model_status": "ready_to_train" if len(sessions) >= 6 else "capturing"})
 
 
 @app.post("/api/analyze")
